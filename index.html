@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>系统更新中</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #0078D7;
+            color: white;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        .update-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #005A9C;
+            margin: 20px auto;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress {
+            width: 0;
+            height: 100%;
+            background-color: white;
+            animation: progressAnimation 3s linear infinite;
+        }
+        @keyframes progressAnimation {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+        .tips {
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        #closeBtn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #005A9C;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="update-container">
+        <h1>正在更新 Windows</h1>
+        <p>请不要关闭电源或拔下电源线</p>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        <p class="tips">正在配置更新 0%</p>
+        <p id="extraInfo">正在准备安装更新文件...</p>
+        <button id="closeBtn" onclick="closeUpdate()">关闭</button>
+    </div>
+
+    <script>
+        const progressBar = document.querySelector('.progress');
+        const tips = document.querySelector('.tips');
+        const extraInfo = document.getElementById('extraInfo');
+        const closeBtn = document.getElementById('closeBtn');
+
+        const updateTexts = [
+            "正在准备安装更新文件...",
+            "正在下载更新...",
+            "正在验证更新包...",
+            "正在优化系统性能...",
+            "即将完成更新..."
+        ];
+
+        let progress = 0;
+        let textIndex = 0;
+
+        function updateProgress() {
+            progress++;
+            tips.textContent = `正在配置更新 ${progress}%`;
+
+            if (progress >= 100) {
+                extraInfo.textContent = "更新即将完成";
+                closeBtn.style.display = 'block';
+                return;
+            }
+
+            if (progress % 20 === 0) {
+                extraInfo.textContent = updateTexts[textIndex % updateTexts.length];
+                textIndex++;
+            }
+
+            setTimeout(updateProgress, Math.random() * 500 + 500);
+        }
+
+        function closeUpdate() {
+            window.close();
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>

@@ -8,91 +8,154 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: "Segoe UI", sans-serif;
         }
 
-        /* Excel 界面样式 */
-        .excel-ui {
+        /* Excel 主容器 */
+        .excel-container {
             width: 100%;
-            max-width: 1200px;
-            margin: 20px auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #f3f3f3;
         }
 
-        /* 功能区 */
-        .ribbon {
-            background: #f3f3f3;
-            padding: 8px;
-            border: 1px solid #ccc;
+        /* 顶部快速访问工具栏 */
+        .quick-access {
+            height: 40px;
+            background: #f8f8f8;
             display: flex;
-            gap: 15px;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #d0d0d0;
         }
-        .ribbon-item {
-            padding: 4px 8px;
+        .quick-access-item {
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #444;
             cursor: default;
         }
-        .ribbon-item:hover {
-            background: #e5e5e5;
-        }
-
-        /* 公式栏 */
-        .formula-bar {
-            display: flex;
-            border: 1px solid #ccc;
+        .search-box {
+            width: 300px;
             height: 24px;
-            margin: 2px 0;
-        }
-        .formula-address {
-            width: 60px;
-            border-right: 1px solid #ccc;
-            padding: 3px;
-            text-align: center;
-        }
-        .formula-input {
-            flex: 1;
-            border: none;
-            padding: 3px;
+            border: 1px solid #c6c6c6;
+            border-radius: 4px;
+            margin-left: auto;
+            padding: 0 8px;
+            font-size: 12px;
         }
 
-        /* 表格容器 */
+        /* 功能区选项卡 */
+        .ribbon-tabs {
+            height: 36px;
+            background: #f8f8f8;
+            display: flex;
+            padding: 0 16px;
+            border-bottom: 1px solid #d0d0d0;
+        }
+        .ribbon-tab {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #555;
+            cursor: default;
+            border-right: 1px solid #e0e0e0;
+        }
+        .ribbon-tab.active {
+            background: #ffffff;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* 功能区面板 */
+        .ribbon-panel {
+            height: 100px;
+            background: #fff;
+            border-bottom: 1px solid #d0d0d0;
+            padding: 12px 16px;
+            display: flex;
+            gap: 24px;
+        }
+        .ribbon-group {
+            display: flex;
+            gap: 8px;
+        }
+        .ribbon-button {
+            height: 24px;
+            padding: 0 10px;
+            background: #f3f3f3;
+            border: 1px solid #d0d0d0;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #333;
+        }
+
+        /* 工作表区域 */
         .grid-container {
-            position: relative;
-            border: 1px solid #ccc;
+            flex: 1;
             overflow: auto;
-            max-height: 600px;
+            background: #fff;
+            margin: 16px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.1);
         }
 
         /* 行列索引 */
         table {
             border-collapse: collapse;
         }
+        .col-index {
+            background: #f8f8f8;
+            height: 20px;
+            min-width: 60px;
+            text-align: center;
+            font-size: 12px;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
+        }
         .row-index {
-            background: #f8f9fa;
+            background: #f8f8f8;
             width: 30px;
             text-align: center;
-            border-right: 1px solid #ccc;
-        }
-        .col-index {
-            background: #f8f9fa;
-            height: 20px;
-            text-align: center;
-            border-bottom: 1px solid #ccc;
-            min-width: 80px;
-        }
-        .cell {
-            border: 1px solid #e3e3e3;
-            width: 80px;
-            height: 20px;
-            padding: 2px;
+            font-size: 12px;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            color: #555;
         }
 
-        /* 工作表标签 */
-        .sheet-tab {
+        /* 单元格 */
+        .cell {
+            width: 60px;
+            height: 20px;
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+            padding: 2px;
+            color: #333;
+        }
+
+        /* 底部工作表标签 */
+        .sheet-tabs {
             position: fixed;
             bottom: 0;
-            background: #f3f3f3;
-            padding: 4px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            padding-left: 16px;
+            border-top: 1px solid #d0d0d0;
+        }
+        .sheet-tab {
+            padding: 4px 16px;
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            border-bottom: none;
+            border-radius: 2px 2px 0 0;
+            font-size: 12px;
+            margin-right: 4px;
         }
 
         /* 游戏元素 */
@@ -105,71 +168,85 @@
     </style>
 </head>
 <body>
-    <div class="excel-ui">
-        <div class="ribbon">
-            <div class="ribbon-item">文件</div>
-            <div class="ribbon-item">插入</div>
-            <div class="ribbon-item">页面布局</div>
-            <div class="ribbon-item">公式</div>
-            <div class="ribbon-item">数据</div>
-            <div class="ribbon-item">审阅</div>
-            <div class="ribbon-item">视图</div>
+    <div class="excel-container">
+        <!-- 顶部工具栏 -->
+        <div class="quick-access">
+            <div class="quick-access-item">自动保存</div>
+            <div class="quick-access-item">工作前1·Excel</div>
+            <input type="text" class="search-box" placeholder="搜索">
         </div>
 
-        <div class="formula-bar">
-            <div class="formula-address">A1</div>
-            <div class="formula-input"></div>
+        <!-- 功能区选项卡 -->
+        <div class="ribbon-tabs">
+            <div class="ribbon-tab active">文件</div>
+            <div class="ribbon-tab">开始</div>
+            <div class="ribbon-tab">插入</div>
+            <div class="ribbon-tab">页面布局</div>
+            <div class="ribbon-tab">公式</div>
+            <div class="ribbon-tab">数据</div>
+            <div class="ribbon-tab">审阅</div>
+            <div class="ribbon-tab">视图</div>
         </div>
 
+        <!-- 功能区面板 -->
+        <div class="ribbon-panel">
+            <div class="ribbon-group">
+                <div class="ribbon-button">剪贴板</div>
+                <div class="ribbon-button">字体</div>
+                <div class="ribbon-button">对齐方式</div>
+                <div class="ribbon-button">数字</div>
+                <div class="ribbon-button">样式</div>
+                <div class="ribbon-button">单元格</div>
+                <div class="ribbon-button">编辑</div>
+            </div>
+        </div>
+
+        <!-- 工作表区域 -->
         <div class="grid-container" id="gridContainer">
             <table id="excelGrid">
-                <!-- 列索引 -->
                 <tr>
                     <td class="row-index"></td>
                     <td class="col-index">A</td>
                     <td class="col-index">B</td>
-                    <!-- 更多列由JavaScript生成 -->
+                    <td class="col-index">C</td>
+                    <td class="col-index">D</td>
+                    <td class="col-index">E</td>
+                    <td class="col-index">F</td>
+                    <td class="col-index">G</td>
+                    <td class="col-index">H</td>
+                    <td class="col-index">I</td>
+                    <td class="col-index">J</td>
+                    <td class="col-index">K</td>
+                    <td class="col-index">L</td>
+                    <td class="col-index">M</td>
+                    <td class="col-index">N</td>
                 </tr>
-                <!-- 行数据由JavaScript生成 -->
+                <!-- 行数据由JS生成 -->
             </table>
         </div>
 
-        <div class="sheet-tab">Sheet1</div>
+        <!-- 底部标签 -->
+        <div class="sheet-tabs">
+            <div class="sheet-tab">Sheet1</div>
+        </div>
     </div>
 
     <script>
-        const GRID_ROWS = 30;
-        const GRID_COLS = 26;
+        const GRID_ROWS = 28;
+        const GRID_COLS = 14; // A到N列
         let snake = [{row: 5, col: 5}];
-        let food = null;
         let direction = 'right';
-        let score = 0;
+        let food = null;
         let gameLoop = null;
 
         // 生成表格
         function createGrid() {
             const grid = document.getElementById('excelGrid');
-            grid.innerHTML = '';
-
-            // 生成列索引
-            const headerRow = document.createElement('tr');
-            headerRow.innerHTML = '<td class="row-index"></td>';
-            for (let col = 0; col < GRID_COLS; col++) {
-                const th = document.createElement('td');
-                th.className = 'col-index';
-                th.textContent = String.fromCharCode(65 + col);
-                headerRow.appendChild(th);
-            }
-            grid.appendChild(headerRow);
-
-            // 生成行
+            
             for (let row = 0; row < GRID_ROWS; row++) {
                 const tr = document.createElement('tr');
-                const rowIndex = document.createElement('td');
-                rowIndex.className = 'row-index';
-                rowIndex.textContent = row + 1;
-                tr.appendChild(rowIndex);
-
+                tr.innerHTML = `<td class="row-index">${row + 1}</td>`;
+                
                 for (let col = 0; col < GRID_COLS; col++) {
                     const td = document.createElement('td');
                     td.className = 'cell';
@@ -188,23 +265,15 @@
                     row: Math.floor(Math.random() * GRID_ROWS),
                     col: Math.floor(Math.random() * GRID_COLS)
                 };
-            } while (snake.some(segment => 
-                segment.row === food.row && segment.col === food.col
-            ));
+            } while (snake.some(s => s.row === food.row && s.col === food.col));
             
-            updateCell(food.row, food.col, 'food');
+            document.querySelector(
+                `[data-row="${food.row}"][data-col="${food.col}"]`
+            ).classList.add('food');
         }
 
-        // 更新单元格状态
-        function updateCell(row, col, type) {
-            const cell = document.querySelector(
-                `[data-row="${row}"][data-col="${col}"]`
-            );
-            cell.className = `cell ${type}`;
-        }
-
-        // 游戏循环
-        function moveSnake() {
+        // 移动逻辑
+        function move() {
             const head = {...snake[0]};
             
             switch(direction) {
@@ -217,9 +286,7 @@
             // 碰撞检测
             if (head.row < 0 || head.row >= GRID_ROWS || 
                 head.col < 0 || head.col >= GRID_COLS ||
-                snake.some(segment => 
-                    segment.row === head.row && segment.col === head.col
-                )) {
+                snake.some(s => s.row === head.row && s.col === head.col)) {
                 gameOver();
                 return;
             }
@@ -228,22 +295,26 @@
 
             // 吃食物检测
             if (head.row === food.row && head.col === food.col) {
-                score++;
                 spawnFood();
             } else {
                 const tail = snake.pop();
-                updateCell(tail.row, tail.col, '');
+                document.querySelector(
+                    `[data-row="${tail.row}"][data-col="${tail.col}"]`
+                ).classList.remove('snake');
             }
 
             // 更新显示
-            snake.forEach((segment, index) => {
-                updateCell(segment.row, segment.col, 'snake');
+            snake.forEach((s, i) => {
+                const cell = document.querySelector(
+                    `[data-row="${s.row}"][data-col="${s.col}"]`
+                );
+                cell.classList.add('snake');
             });
         }
 
         function gameOver() {
             clearInterval(gameLoop);
-            alert(`Game Over! Score: ${score}`);
+            alert(`游戏结束! 得分: ${snake.length - 1}`);
         }
 
         // 事件监听
@@ -259,7 +330,7 @@
         // 初始化
         createGrid();
         spawnFood();
-        gameLoop = setInterval(moveSnake, 200);
+        gameLoop = setInterval(move, 200);
     </script>
 </body>
 </html>

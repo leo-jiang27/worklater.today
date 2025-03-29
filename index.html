@@ -1,112 +1,265 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>系统更新中</title>
+    <title>Excel Snake</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #0078D7;
-            color: white;
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-        .update-container {
-            text-align: center;
-            max-width: 600px;
-            padding: 20px;
-        }
-        .progress-bar {
-            width: 300px;
-            height: 20px;
-            background-color: #005A9C;
+
+        /* Excel 界面样式 */
+        .excel-ui {
+            width: 100%;
+            max-width: 1200px;
             margin: 20px auto;
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
         }
-        .progress {
-            width: 0;
-            height: 100%;
-            background-color: white;
-            animation: progressAnimation 3s linear infinite;
+
+        /* 功能区 */
+        .ribbon {
+            background: #f3f3f3;
+            padding: 8px;
+            border: 1px solid #ccc;
+            display: flex;
+            gap: 15px;
         }
-        @keyframes progressAnimation {
-            0% { width: 0; }
-            100% { width: 100%; }
+        .ribbon-item {
+            padding: 4px 8px;
+            cursor: default;
         }
-        .tips {
-            font-size: 12px;
-            margin-top: 10px;
+        .ribbon-item:hover {
+            background: #e5e5e5;
         }
-        #closeBtn {
-            display: none;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #005A9C;
+
+        /* 公式栏 */
+        .formula-bar {
+            display: flex;
+            border: 1px solid #ccc;
+            height: 24px;
+            margin: 2px 0;
+        }
+        .formula-address {
+            width: 60px;
+            border-right: 1px solid #ccc;
+            padding: 3px;
+            text-align: center;
+        }
+        .formula-input {
+            flex: 1;
             border: none;
-            color: white;
-            cursor: pointer;
+            padding: 3px;
+        }
+
+        /* 表格容器 */
+        .grid-container {
+            position: relative;
+            border: 1px solid #ccc;
+            overflow: auto;
+            max-height: 600px;
+        }
+
+        /* 行列索引 */
+        table {
+            border-collapse: collapse;
+        }
+        .row-index {
+            background: #f8f9fa;
+            width: 30px;
+            text-align: center;
+            border-right: 1px solid #ccc;
+        }
+        .col-index {
+            background: #f8f9fa;
+            height: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+            min-width: 80px;
+        }
+        .cell {
+            border: 1px solid #e3e3e3;
+            width: 80px;
+            height: 20px;
+            padding: 2px;
+        }
+
+        /* 工作表标签 */
+        .sheet-tab {
+            position: fixed;
+            bottom: 0;
+            background: #f3f3f3;
+            padding: 4px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        /* 游戏元素 */
+        .snake {
+            background: #00a74a !important;
+        }
+        .food {
+            background: #ff0000 !important;
         }
     </style>
 </head>
 <body>
-    <div class="update-container">
-        <h1>正在更新 Windows</h1>
-        <p>请不要关闭电源或拔下电源线</p>
-        <div class="progress-bar">
-            <div class="progress"></div>
+    <div class="excel-ui">
+        <div class="ribbon">
+            <div class="ribbon-item">文件</div>
+            <div class="ribbon-item">插入</div>
+            <div class="ribbon-item">页面布局</div>
+            <div class="ribbon-item">公式</div>
+            <div class="ribbon-item">数据</div>
+            <div class="ribbon-item">审阅</div>
+            <div class="ribbon-item">视图</div>
         </div>
-        <p class="tips">正在配置更新 0%</p>
-        <p id="extraInfo">正在准备安装更新文件...</p>
-        <button id="closeBtn" onclick="closeUpdate()">关闭</button>
+
+        <div class="formula-bar">
+            <div class="formula-address">A1</div>
+            <div class="formula-input"></div>
+        </div>
+
+        <div class="grid-container" id="gridContainer">
+            <table id="excelGrid">
+                <!-- 列索引 -->
+                <tr>
+                    <td class="row-index"></td>
+                    <td class="col-index">A</td>
+                    <td class="col-index">B</td>
+                    <!-- 更多列由JavaScript生成 -->
+                </tr>
+                <!-- 行数据由JavaScript生成 -->
+            </table>
+        </div>
+
+        <div class="sheet-tab">Sheet1</div>
     </div>
 
     <script>
-        const progressBar = document.querySelector('.progress');
-        const tips = document.querySelector('.tips');
-        const extraInfo = document.getElementById('extraInfo');
-        const closeBtn = document.getElementById('closeBtn');
+        const GRID_ROWS = 30;
+        const GRID_COLS = 26;
+        let snake = [{row: 5, col: 5}];
+        let food = null;
+        let direction = 'right';
+        let score = 0;
+        let gameLoop = null;
 
-        const updateTexts = [
-            "正在准备安装更新文件...",
-            "正在下载更新...",
-            "正在验证更新包...",
-            "正在优化系统性能...",
-            "即将完成更新..."
-        ];
+        // 生成表格
+        function createGrid() {
+            const grid = document.getElementById('excelGrid');
+            grid.innerHTML = '';
 
-        let progress = 0;
-        let textIndex = 0;
+            // 生成列索引
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = '<td class="row-index"></td>';
+            for (let col = 0; col < GRID_COLS; col++) {
+                const th = document.createElement('td');
+                th.className = 'col-index';
+                th.textContent = String.fromCharCode(65 + col);
+                headerRow.appendChild(th);
+            }
+            grid.appendChild(headerRow);
 
-        function updateProgress() {
-            progress++;
-            tips.textContent = `正在配置更新 ${progress}%`;
+            // 生成行
+            for (let row = 0; row < GRID_ROWS; row++) {
+                const tr = document.createElement('tr');
+                const rowIndex = document.createElement('td');
+                rowIndex.className = 'row-index';
+                rowIndex.textContent = row + 1;
+                tr.appendChild(rowIndex);
 
-            if (progress >= 100) {
-                extraInfo.textContent = "更新即将完成";
-                closeBtn.style.display = 'block';
+                for (let col = 0; col < GRID_COLS; col++) {
+                    const td = document.createElement('td');
+                    td.className = 'cell';
+                    td.dataset.row = row;
+                    td.dataset.col = col;
+                    tr.appendChild(td);
+                }
+                grid.appendChild(tr);
+            }
+        }
+
+        // 生成食物
+        function spawnFood() {
+            do {
+                food = {
+                    row: Math.floor(Math.random() * GRID_ROWS),
+                    col: Math.floor(Math.random() * GRID_COLS)
+                };
+            } while (snake.some(segment => 
+                segment.row === food.row && segment.col === food.col
+            ));
+            
+            updateCell(food.row, food.col, 'food');
+        }
+
+        // 更新单元格状态
+        function updateCell(row, col, type) {
+            const cell = document.querySelector(
+                `[data-row="${row}"][data-col="${col}"]`
+            );
+            cell.className = `cell ${type}`;
+        }
+
+        // 游戏循环
+        function moveSnake() {
+            const head = {...snake[0]};
+            
+            switch(direction) {
+                case 'up': head.row--; break;
+                case 'down': head.row++; break;
+                case 'left': head.col--; break;
+                case 'right': head.col++; break;
+            }
+
+            // 碰撞检测
+            if (head.row < 0 || head.row >= GRID_ROWS || 
+                head.col < 0 || head.col >= GRID_COLS ||
+                snake.some(segment => 
+                    segment.row === head.row && segment.col === head.col
+                )) {
+                gameOver();
                 return;
             }
 
-            if (progress % 20 === 0) {
-                extraInfo.textContent = updateTexts[textIndex % updateTexts.length];
-                textIndex++;
+            snake.unshift(head);
+
+            // 吃食物检测
+            if (head.row === food.row && head.col === food.col) {
+                score++;
+                spawnFood();
+            } else {
+                const tail = snake.pop();
+                updateCell(tail.row, tail.col, '');
             }
 
-            setTimeout(updateProgress, Math.random() * 500 + 500);
+            // 更新显示
+            snake.forEach((segment, index) => {
+                updateCell(segment.row, segment.col, 'snake');
+            });
         }
 
-        function closeUpdate() {
-            window.close();
+        function gameOver() {
+            clearInterval(gameLoop);
+            alert(`Game Over! Score: ${score}`);
         }
 
-        updateProgress();
+        // 事件监听
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp': if (direction !== 'down') direction = 'up'; break;
+                case 'ArrowDown': if (direction !== 'up') direction = 'down'; break;
+                case 'ArrowLeft': if (direction !== 'right') direction = 'left'; break;
+                case 'ArrowRight': if (direction !== 'left') direction = 'right'; break;
+            }
+        });
+
+        // 初始化
+        createGrid();
+        spawnFood();
+        gameLoop = setInterval(moveSnake, 200);
     </script>
 </body>
 </html>
